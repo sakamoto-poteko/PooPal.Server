@@ -1,0 +1,44 @@
+﻿@page "/fetchdata"
+@inject HttpClient Http
+
+@using PooPal.Server.Common
+
+<h1>Poo Detection Scatter Table</h1>
+
+
+
+@if (pooDetections == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Start</th>
+                <th>Duration</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var detection in pooDetections)
+            {
+                <tr>
+                    <td>@detection.PooStart.ToShortDateString()</td>
+                    <td>@detection.PooDuration</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private PooDetectionResponseModel[] pooDetections;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var deviceId = "prototype1";
+        pooDetections = await Http.GetFromJsonAsync<PooDetectionResponseModel[]>($"api/GetPooStatus?deviceId={deviceId}");
+    }
+
+}
