@@ -35,7 +35,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        var deviceId = "prototype1";
+        var deviceId = "prototype0";
         pooDetections = await Http.GetFromJsonAsync<PooDetectionResponseModel[]>($"api/GetPooStatus?deviceId={deviceId}");
     }
 

@@ -35,7 +35,7 @@ export function scatter_chart_init(scatter_chart_element, data) {
             data: data,
             type: 'scatter',
             symbolSize: function (data) {
-                return data[1] * data[1];
+                return data[1] / 10.;
             },
             emphasis: {
                 label: {
