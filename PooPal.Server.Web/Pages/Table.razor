@@ -1,4 +1,4 @@
-@page "/fetchdata"
+@page "/table"
 @inject HttpClient Http
 
 @using PooPal.Server.Common
@@ -22,7 +22,7 @@ else
             @foreach (var detection in pooDetections)
             {
                 <tr>
-                    <td>@detection.PooStart.ToShortDateString()</td>
+                    <td>@detection.PooStart.ToLocalTime().ToString()</td>
                     <td>@detection.PooDuration</td>
                 </tr>
             }

@@ -1,8 +1,8 @@
 using System;
-using System.Collections.Generic;
 using System.Net.Http;
-using System.Text;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Text;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,9 +15,10 @@ namespace PooPal.Server.Web
         public static async Task Main(string[] args)
         {
             var builder = WebAssemblyHostBuilder.CreateDefault(args);
-            builder.RootComponents.Add<App>("app");
+            builder.RootComponents.Add<App>("#app");
 
-            builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://poopal-server.azurewebsites.net/") });
+            string serverEndpoint = builder.Configuration["ServerEndpoint"];
+            builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(serverEndpoint) });
 
             await builder.Build().RunAsync();
         }

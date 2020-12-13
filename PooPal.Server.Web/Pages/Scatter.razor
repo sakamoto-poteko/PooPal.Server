@@ -1,9 +1,14 @@
-﻿@page "/fetchdata"
+﻿@page "/chart"
 @inject HttpClient Http
 
 @using PooPal.Server.Common
+@using Microsoft.JSInterop
 
-<h1>Poo Detection Scatter Table</h1>
+@inject IJSRuntime JS
+@implements IAsyncDisposable
+
+
+<div @ref="chartElement" style="width:1000px; height:800px;"></div>
 
 
 
@@ -11,34 +16,38 @@
 {
     <p><em>Loading...</em></p>
 }
-else
-{
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Start</th>
-                <th>Duration</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var detection in pooDetections)
-            {
-                <tr>
-                    <td>@detection.PooStart.ToShortDateString()</td>
-                    <td>@detection.PooDuration</td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
 
 @code {
+    ElementReference chartElement;
+    IJSObjectReference renderChartsModule;
+    bool firstRender = true;
+
     private PooDetectionResponseModel[] pooDetections;
 
     protected override async Task OnInitializedAsync()
     {
         var deviceId = "prototype1";
         pooDetections = await Http.GetFromJsonAsync<PooDetectionResponseModel[]>($"api/GetPooStatus?deviceId={deviceId}");
+
+
+        if (firstRender)
+        {
+            renderChartsModule = await JS.InvokeAsync<IJSObjectReference>("import", "./js/render_charts.js");
+
+            var data = pooDetections.Select(pooEvent =>
+            {
+                var localStartTime = pooEvent.PooStart.ToLocalTime();
+                var minuteOfTheDay = (localStartTime.Hour * 60.0 + localStartTime.Minute) / (60.0);
+                return new object[] { minuteOfTheDay, pooEvent.PooDuration, localStartTime.ToString() };
+            }).ToArray();
+
+            await renderChartsModule.InvokeVoidAsync("scatter_chart_init", chartElement, data);
+            firstRender = false;
+        }
     }
 
+    async ValueTask IAsyncDisposable.DisposeAsync()
+    {
+        await renderChartsModule.DisposeAsync();
+    }
 }
