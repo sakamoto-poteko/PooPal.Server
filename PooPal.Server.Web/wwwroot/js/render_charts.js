@@ -41,7 +41,7 @@ export function scatter_chart_init(scatter_chart_element, data) {
                 label: {
                     show: true,
                     formatter: function (param) {
-                        return param.data[2];
+                        return `${param.data[2]} ${param.data[1]}s`;
                     },
                     position: 'top'
                 }

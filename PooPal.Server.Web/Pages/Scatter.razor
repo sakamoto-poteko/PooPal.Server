@@ -7,6 +7,7 @@
 @inject IJSRuntime JS
 @implements IAsyncDisposable
 
+<h4>Device: <em>@deviceId</em></h4>
 
 <div @ref="chartElement" style="width:1000px; height:800px;"></div>
 
@@ -21,12 +22,12 @@
     ElementReference chartElement;
     IJSObjectReference renderChartsModule;
     bool firstRender = true;
+    string deviceId = "prototype0";
 
     private PooDetectionResponseModel[] pooDetections;
 
     protected override async Task OnInitializedAsync()
     {
-        var deviceId = "prototype0";
         pooDetections = await Http.GetFromJsonAsync<PooDetectionResponseModel[]>($"api/GetPooStatus?deviceId={deviceId}");
 
 
